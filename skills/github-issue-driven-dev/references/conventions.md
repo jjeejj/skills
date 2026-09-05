@@ -1,64 +1,64 @@
 # GitHub Issue & Task Conventions
 
-本规范定义了基于 GitHub Issues 驱动开发过程中的标签体系、优先级划分、生命周期状态及 Git Commit / PR 联动规范。
+This specification defines label taxonomies, priority matrices, lifecycle state flows, and Git Commit / PR cross-linking conventions for GitHub Issue-driven development.
 
 ---
 
-## 1. 标签体系 (Label Taxonomy)
+## 1. Label Taxonomy
 
-### 1.1 类型标签 (Type)
-| 标签名 | 颜色建议 | 说明 |
+### 1.1 Type Labels
+| Label | Color Suggestion | Description |
 | :--- | :--- | :--- |
-| `bug` | `#d73a4a` (红) | 缺陷排查与修复 |
-| `enhancement` | `#a2eeef` (浅蓝) | 新功能、功能增强或演进需求 |
-| `documentation` | `#0075ca` (蓝) | 文档编写、规范更新或注释补充 |
-| `refactor` | `#cfd3d7` (灰) | 代码重构（不改变外部行为） |
-| `chore` | `#fef2c0` (浅黄) | 构建脚本、依赖升级或辅助性杂务 |
+| `bug` | `#d73a4a` (Red) | Bug fixes, unexpected errors, crashes, or incorrect behavior |
+| `enhancement` | `#a2eeef` (Light Blue) | New features, enhancements, or requirement evolutions |
+| `documentation` | `#0075ca` (Blue) | Documentation additions, specification updates, or docstrings |
+| `refactor` | `#cfd3d7` (Gray) | Code refactoring without changing external behavior |
+| `chore` | `#fef2c0` (Light Yellow) | Build scripts, dependency bumps, or tool maintenance |
 
-### 1.2 优先级标签 (Priority)
-| 优先级 | 适用场景 | 响应与跟进要求 |
+### 1.2 Priority Matrix
+| Priority | Scenarios | SLA & Follow-up Expectation |
 | :--- | :--- | :--- |
-| `P0` | **阻断性紧急故障**：生产服务不可用、数据丢失损坏、主干构建破损 | 立即中断其他工作，集中排查并实时留痕 |
-| `P1` | **高优先级**：核心功能受阻、主流程关键缺陷、当前迭代必须交付的需求 | 优先排期，排查定位需输出完整 RCA |
-| `P2` | **普通优先级**：非核心功能缺陷、常规需求演进、有可行变通方案的问题 | 正常排期开发 |
-| `P3` | **次要/低优先级**：体验优化、边缘场景小瑕疵、非紧迫的技术债 | 资源充裕时处理 |
+| `P0` | **Blocker / Emergency**: Production outage, critical data loss/corruption, broken main branch build | Drop all current work; coordinate immediate hotfix and document root causes in real time |
+| `P1` | **High Priority**: Core user journey blocked, major regression, must-deliver milestone feature | Prioritize in current sprint/iteration; require comprehensive RCA on completion |
+| `P2` | **Medium Priority**: Non-critical bugs, normal feature requests, issues with viable workarounds | Standard planning and resolution |
+| `P3` | **Low Priority**: Polish, minor UI inconsistencies, low-impact technical debt | Addressed when bandwidth permits |
 
 ---
 
-## 2. Issue 关联与提交联动语法
+## 2. Issue Cross-referencing & PR Linkage
 
-### 2.1 Git Commit 关联规范
-在 Git 提交信息中显式关联 Issue，推荐采用 Conventional Commits 格式：
+### 2.1 Commit Message Linkage
+Explicitly link issues in Git commits using Conventional Commits syntax:
 
 ```bash
-# 修复 Bug 并在 PR 合并或推送主干时自动关闭 Issue
+# Resolve bug and automatically close issue upon merging/pushing to default branch:
 fix(core): resolve memory leak on background reload (Fixes #42)
 
-# 新增功能并关闭对应需求 Issue
+# Implement feature and close issue:
 feat(auth): support OAuth2 token refresh (Closes #108)
 
-# 阶段性进展提交，仅引用不关闭
+# Incremental progress commit, reference without closing:
 refactor(store): split state reducer logic (Refs #56)
 ```
 
-### 2.2 GitHub 自动关闭关键字 (Closing Keywords)
-在 Commit Message 或 PR 描述中包含以下关键词，合并至默认分支时会自动关闭目标 Issue：
-- `Fixes #<编号>` / `Fixed #<编号>` / `Fix #<编号>`
-- `Closes #<编号>` / `Closed #<编号>` / `Close #<编号>`
-- `Resolves #<编号>` / `Resolved #<编号>` / `Resolve #<编号>`
+### 2.2 GitHub Auto-closing Keywords
+When included in commit messages or PR descriptions, these keywords automatically close the referenced issue when merged into the default branch:
+- `Fixes #<number>` / `Fixed #<number>` / `Fix #<number>`
+- `Closes #<number>` / `Closed #<number>` / `Close #<number>`
+- `Resolves #<number>` / `Resolved #<number>` / `Resolve #<number>`
 
-### 2.3 跨 Issue 双向引用 (Cross-referencing)
-在讨论或 Issue 描述中引用其他 Issue：
-- 同仓库：直接输入 `#<编号>`，如 `#15`
-- 跨仓库：输入 `<owner>/<repo>#<编号>`，如 `octocat/hello-world#33`
-- 关联关系说明：明确写出关系性质，如 `前置依赖: #12`、`下游需求: #18`、`衍生 Bug: #25`
+### 2.3 Cross-Issue Referencing
+To link related issues in comments or issue descriptions:
+- **Same repository**: Use `#<number>`, e.g., `#15`
+- **Cross-repository**: Use `<owner>/<repo>#<number>`, e.g., `octocat/hello-world#33`
+- **Relationship annotations**: State dependency nature clearly, e.g., `Blocked by: #12`, `Parent feature: #18`, `Follow-up: #25`.
 
 ---
 
-## 3. RCA (Root Cause Analysis) 质量标准
+## 3. RCA (Root Cause Analysis) Quality Standards
 
-当修复重要或复杂的 Bug 时，结案评论中必须包含以下要素：
-1. **现象与证据链 (Symptoms & Evidence)**：直观现象、报错日志片段、系统环境、重现最小样本。
-2. **根因分析 (Root Cause Analysis)**：深入解释代码逻辑失误、并发竞态、边界缺失或第三方行为变更，拒绝“修改了变量名故修复”等敷衍说明。
-3. **修复方案与改动细节 (Fix Details)**：列出修改文件与关键逻辑变更。
-4. **验证结论 (Verification)**：自动化测试命令输出、手工验证表现与防回退措施。
+When closing high-impact or complex bug issues, the closing or progress comment must include:
+1. **Symptoms & Evidence**: Observable errors, stack traces, log excerpts, reproduction environment, minimal repro case.
+2. **Root Cause Analysis (RCA)**: Deep technical explanation of code defect, race condition, missing boundary check, or upstream dependency change.
+3. **Fix Details**: Affected files and summary of architectural / logic corrections.
+4. **Verification**: Automated test command results, manual validation steps, and regression prevention.

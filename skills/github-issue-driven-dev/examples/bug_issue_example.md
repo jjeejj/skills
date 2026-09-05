@@ -1,31 +1,31 @@
-# [Bug]: 切换暗色模式时用户个人中心页面崩溃 (SIGSEGV)
+# [Bug]: Application crashes with SIGSEGV when toggling Dark Mode in Profile Settings
 
-## 现象
-在 macOS 15.0 系统中，当用户在系统控制中心快速切换“浅色/暗色”外观模式时，个人中心页面触发崩溃，应用异常退出。
+## Symptoms
+On macOS 15.0, rapidly toggling between Light and Dark appearance modes in Control Center causes the profile view controller to crash with a segmentation fault.
 
-- **操作系统**：macOS Sequoia 15.0 (24A335)
-- **设备架构**：Apple Silicon (M2 Max)
-- **崩溃特征**：`EXC_BAD_ACCESS (SIGSEGV)` 在 `ThemeManager.swift:84`
+- **OS**: macOS Sequoia 15.0 (24A335)
+- **Architecture**: Apple Silicon (M2 Max)
+- **Crash Signature**: `EXC_BAD_ACCESS (SIGSEGV)` at `ThemeManager.swift:84`
 
-## 复现步骤
-1. 打开应用并进入“个人中心”页面；
-2. 打开系统偏好设置 -> 外观；
-3. 在浅色与暗色模式之间连续切换 2 次；
-4. 观察到应用主窗口消失，控制台打印 Segmentation Fault。
+## Steps to Reproduce
+1. Open the application and navigate to the "Profile" screen;
+2. Open macOS System Settings -> Appearance;
+3. Toggle between Light and Dark appearance 2-3 times in quick succession;
+4. The main application window disappears and the console outputs Segmentation Fault.
 
-## 现场截图
+## Crash Evidence
 ![Crash Log](https://github.com/user-attachments/assets/7a8e91b4-4567-48de-b567-c23456789abc)
 
-## 关联 Issue
-- **前置需求**：#12 (支持系统外观模式自动跟随)
+## Related Issues
+- **Preceding Feature**: #12 (Add dynamic system theme observation)
 
-## 影响面
-所有使用 macOS 15+ 并开启外观模式自动切换的用户，在打开个人中心时均有较高概率遭遇崩溃。
+## Impact
+All macOS 15+ users with dynamic/auto appearance enabled experience frequent crashes when visiting the Profile view.
 
-## 初步排查与可能方向
-- `ThemeObserver` 在反注册观察者前被析构，导致野指针回调；
-- 异步线程更新 UI 元素未切回主线程。
+## Preliminary Investigation & Suspected Root Cause
+- `ThemeObserver` may be deallocated before unregistering notification observers, leading to dangling pointer callbacks.
+- Background notification handler might be updating UI elements without dispatching to the main thread.
 
-## 验收标准
-- 连续切换浅色/暗色模式 20 次，个人中心页面渲染平滑，无闪退；
-- 自动化单元测试 `ThemeManagerTests` 增加反注册并发测试并通过。
+## Acceptance Criteria
+- Toggling appearance 20+ times consecutively does not trigger crashes or UI glitches.
+- Unit test suite `ThemeManagerTests` adds high-concurrency observer deregistration test and passes cleanly.

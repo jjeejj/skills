@@ -1,6 +1,6 @@
 ---
 name: github-issue-driven-dev
-description: Standard GitHub Issue-driven development, tracking, and RCA workflow. Use whenever tracking requirements or bugs via GitHub Issues, creating or updating issues, filing bug reports, posting progress updates or root-cause analysis (RCA) comments, linking related issues, closing resolved issues, or uploading screenshots/videos to GitHub user-attachments without polluting the git repo.
+description: Standard GitHub Issue-driven development, tracking, and RCA workflow. Use whenever tracking requirements or bugs via GitHub Issues, creating or updating issues, filing bug reports, posting progress updates or root-cause analysis (RCA) comments, linking related issues, closing resolved issues, or uploading screenshots/videos to GitHub user-attachments without polluting the git repo. Triggers on phrases like 'file an issue', 'create bug report', 'post RCA', 'track on issue', 'upload screenshot to issue', 'close issue', or Chinese equivalents like '提issue', '创建issue', '记录到issue', 'RCA留底', '问题留痕', '上传截图到issue'.
 license: Apache-2.0
 metadata:
   version: v2
@@ -9,179 +9,177 @@ metadata:
 
 # GitHub Issue-Driven Development & Tracking Workflow
 
-本技能规范并固化了面向 GitHub 项目的**需求驱动开发、过程留底、关联追踪、结案归档与零污染图片上传**的标准开发工作流。
+Standardizes requirements-driven development, progress audit trails, cross-linking, issue resolution, and zero-pollution asset uploads on GitHub.
 
 ---
 
-## 核心原则 (Core Principles)
+## Core Principles
 
-1. **一事一议，创建 Issue**：任何新需求立项或 Bug 发现，必须首先在 GitHub 创建对应 Issue 留底追踪。
-2. **过程必留痕**：开发或排查过程中，一旦发现新问题、关键边界条件或完成修复，必须在对应 Issue 评论区追加记录（包括 RCA 根因排查与验证结论）。
-3. **关联双向追踪**：若新 Issue 与已有 Issue 存在前后依赖或因果关系，必须显式引用 `#<编号>`，并在原 Issue 发表跟进评论。
-4. **零污染图片直传**：截图、日志或录屏绝对禁止直接提交到 Git 仓库，必须使用 `gh-safe.sh upload-asset` 上传至 GitHub 官方附件池（`user-attachments/assets`），并在正文中以纯 Markdown 引用。
-5. **幂等写操作**：严禁无保护地裸调 `gh issue create` 或 `gh issue comment`。必须通过安全脚本 `gh-safe.sh` 查重后执行，根治智能体因重试或网络重发造成的重复建单与刷屏。
-
----
-
-## 工具脚本定位与解析
-
-安全包装脚本 `gh-safe.sh` 位于本技能的 `scripts/` 目录中。使用时按以下顺序解析脚本路径：
-
-1. **项目工程内优先**：若当前工程根目录下已集成 `./scripts/gh-safe.sh`，优先使用 `./scripts/gh-safe.sh`；
-2. **技能目录定位**：若工程未内置，则直接调用本技能目录下的执行脚本：
-   - 当前技能目录：`<skill-dir>/scripts/gh-safe.sh`
-3. **仓库定位配置**：
-   - 脚本默认通过 `gh repo view` 或 `git remote get-url origin` 自动获取当前仓库；
-   - 如需显式指定跨仓库操作，可通过环境变量传参：`REPO=owner/repo <script-path> <command> ...`
+1. **One Issue Per Scope**: Every new feature, enhancement, or bug report must have a corresponding GitHub Issue filed first.
+2. **Audit Trails & Progress Logging**: When encountering edge cases, discovering unexpected regressions, or completing a fix, append an update or Root Cause Analysis (RCA) comment to the issue.
+3. **Bidirectional Cross-Referencing**: When a new issue depends on or relates to an existing issue, explicitly reference `#<number>` and notify the origin issue.
+4. **Zero-Pollution Asset Uploads**: Screenshots, screen recordings, and logs must NEVER be committed to the Git repository. Always use `gh-safe.sh upload-asset` to upload directly to GitHub's official attachment storage (`user-attachments/assets`), and embed the returned URL as Markdown.
+5. **Idempotent Write Operations**: Never invoke bare `gh issue create` or `gh issue comment` without deduplication checks. Always use `gh-safe.sh` to prevent accidental duplicate tickets and repeated comments caused by agent retries or network replays.
 
 ---
 
-## 完整工作流与操作指南
+## Script Location & Resolution
 
-### 1. 新建需求 Issue (`enhancement`, `P0/P1/P2/P3`)
+The helper script `gh-safe.sh` is located inside the skill's `scripts/` directory. When executing commands, resolve the script path in this order:
+
+1. **Project-local script (Preferred if present)**: `./scripts/gh-safe.sh`
+2. **Skill-bundled script**: `<skill-directory>/scripts/gh-safe.sh`
+3. **Target Repository**:
+   - Defaults automatically to the current Git repository via `gh repo view` or `git remote get-url origin`.
+   - Explicit repository override: `REPO=owner/repo <script-path> <command> ...`
+
+---
+
+## Complete Workflow & Usage Guide
+
+### 1. File Feature or Enhancement Issue (`enhancement`, `P0/P1/P2/P3`)
 
 ```bash
-# 执行命令（标题查重，若存在相同标题 Issue 则跳过创建并输出已有链接）
-<path-to>/gh-safe.sh issue-create "标题" --body-file <文件.md> --label enhancement --label P1
+# Checks for existing issues with the same title before creating:
+<path-to>/gh-safe.sh issue-create "Title" --body-file <body.md> --label enhancement --label P1
 ```
 
-**正文 Markdown 模板**：
+**Markdown Body Template**:
 ```markdown
-## 背景
-[现状描述与痛点分析]
+## Background
+[Context and problem statement]
 
-## 需求
-- [需求点 1]
-- [需求点 2]
+## Requirements
+- [Requirement item 1]
+- [Requirement item 2]
 
-## 关联 Issue（若有）
-- **前置依赖**：#3
-- **相关需求**：#9
+## Related Issues (If any)
+- **Preceding dependency**: #3
+- **Related requirement**: #9
 
-## 验收步骤
-1. [具体命令或交互验证步骤 1]
-2. [具体命令或交互验证步骤 2]
+## Acceptance Steps
+1. [Verification step 1]
+2. [Verification step 2]
 
-## 验收标准
-- [最终达成的预期效果]
+## Acceptance Criteria
+- [Expected outcome]
 
-## 优先级
+## Priority
 [P0 / P1 / P2 / P3]
 ```
 
 ---
 
-### 2. 新建 Bug Issue (`bug`, `P0/P1/P2`)
+### 2. File Bug Report Issue (`bug`, `P0/P1/P2`)
 
 ```bash
-# 执行命令
-<path-to>/gh-safe.sh issue-create "标题" --body-file <文件.md> --label bug --label P1
+<path-to>/gh-safe.sh issue-create "Title" --body-file <body.md> --label bug --label P1
 ```
 
-**正文 Markdown 模板**：
+**Markdown Body Template**:
 ```markdown
-## 现象
-[发生的问题与直观表现，包含环境：系统版本、硬件或分辨率]
+## Symptoms
+[Observed error and visual behavior, including OS version, architecture, screen resolution]
 
-## 复现步骤
-1. [步骤 1]
-2. [步骤 2]
+## Steps to Reproduce
+1. [Step 1]
+2. [Step 2]
 
-## 现场截图（若有）
-![错误现场](https://github.com/user-attachments/assets/xxxx)
+## Crash / Visual Evidence (If any)
+![Error Screenshot](https://github.com/user-attachments/assets/xxxx)
 
-## 关联 Issue（若有）
-- **关联上游**：#10
+## Related Issues (If any)
+- **Upstream dependency**: #10
 
-## 影响面
-[受影响的功能或受众]
+## Impact
+[Affected user groups or components]
 
-## 初步排查与可能方向
-- [代码定位或怀疑点]
+## Initial Investigation & Suspected Areas
+- [Suspected code location or mechanism]
 
-## 验收标准
-- [修复后的正确表现]
+## Acceptance Criteria
+- [Correct behavior after fix]
 ```
 
 ---
 
-### 3. 过程发现新问题 / RCA 根因排查留底（Issue 评论）
+### 3. Log Progress / File RCA Root Cause Analysis (Issue Comment)
 
-当开发中遇到未预期问题、需要调整方案，或已定位根本原因完成修复时，在对应 Issue 发表留痕评论：
+Whenever encountering unexpected findings during development or concluding a fix, append a deduplicated comment:
 
 ```bash
-# 格式：gh-safe.sh issue-comment <Issue编号(支持 12 或 #12)> <正文文件 | 纯文本 | - (stdin)>
+# Syntax: gh-safe.sh issue-comment <issue_number (e.g. 42 or #42)> <file | text | - (stdin)>
 <path-to>/gh-safe.sh issue-comment 42 comment.md
-# 或管道输入
+# Or pipe from stdin:
 cat comment.md | <path-to>/gh-safe.sh issue-comment 42 -
 ```
 
-**RCA / 进展 Markdown 模板**：
+**RCA / Progress Comment Template**:
 ```markdown
-## 进展 / 发现新问题（或 结案：根因定位与修复）
+## Progress / RCA: Root Cause & Resolution
 
-### 现象与证据链
-[排查过程中发现的偏差、边界情况、报错日志或 Dump 数据]
+### Symptoms & Evidence Chain
+[Discrepancies, edge cases, error logs, or diagnostic dumps]
 
-### 根因分析 (RCA)
-[代码逻辑原因或系统底层机制]
+### Root Cause Analysis (RCA)
+[Underlying code defect, race condition, or platform mechanism]
 
-### 应对方案调整 / 修复细节
-- **改动文件**：`path/to/file.ext`
-- **关联 Commit**：`commit_hash`
+### Solution & Changes
+- **Modified Files**: `path/to/file.ext`
+- **Associated Commit**: `commit_hash`
 
-### 验证情况
-- 自动化测试（如 `cargo test` / `npm test` / `pytest`）通过情况
-- 手工端到端或诊断验证结论
+### Verification
+- Automated test command and output
+- Manual end-to-end verification results
 
-### 验收步骤
-1. [可供用户复查的具体步骤]
+### Verification Steps
+1. [Steps for reviewers/users to verify]
 ```
 
 ---
 
-### 4. 零污染图片直传（免 Git 提交）
+### 4. Zero-Pollution Asset Uploads (Without Git Commits)
 
-当用户提供本地图片、截图或录屏时，调用此命令直接上传：
+When attaching local screenshots, videos, or logs:
 
 ```bash
 URL=$(<path-to>/gh-safe.sh upload-asset "/path/to/screenshot.png")
 echo "$URL"
-# 输出示例：https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0
+# Output example: https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0
 ```
 
-随后直接在 Markdown 正文中嵌入链接：
+Embed directly in Markdown issue body or comment:
 ```markdown
-![截图描述](https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0)
+![Screenshot description](https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0)
 ```
-- **支持格式**：PNG、JPG、JPEG、GIF、WebP、SVG、MOV、MP4、WEBM、PDF。
+- **Supported Formats**: PNG, JPG, JPEG, GIF, WebP, SVG, MOV, MP4, WEBM, PDF.
 
 ---
 
-### 5. 结案与关闭 Issue (`issue-close`)
+### 5. Close Resolved Issue (`issue-close`)
 
-当需求完成并经验收，或缺陷已合入主干并验证通过后，执行幂等关闭：
+Once acceptance verification is complete:
 
 ```bash
-# 语法：gh-safe.sh issue-close <编号> [completed|not_planned] [结案评论文件或正文]
-<path-to>/gh-safe.sh issue-close 42 completed "已合入主干并在 v1.2.0 发布，验证全部通过。"
+# Syntax: gh-safe.sh issue-close <issue_number> [completed|not_planned] [closing_comment_or_file]
+<path-to>/gh-safe.sh issue-close 42 completed "Merged into main and released in v1.2.0. All verifications passed."
 ```
 
 ---
 
-### 6. Git Commit 与 PR 自动关联联动
+### 6. Git Commit & PR Linkage
 
-在编写 Git 提交信息或创建 Pull Request 时，遵循标准关闭与引用动词：
-- 修复 Bug 并自动关闭：`fix(auth): handle expired token safely (Fixes #42)`
-- 实现需求并自动关闭：`feat(export): support jsonl streaming export (Closes #108)`
-- 阶段性引用但不关闭：`refactor(db): optimize query indexes (Refs #56)`
+Follow standard keywords in commit messages or pull requests to link or auto-close issues:
+- Fix bug and auto-close: `fix(auth): handle expired token safely (Fixes #42)`
+- Feature delivery and auto-close: `feat(export): support jsonl streaming export (Closes #108)`
+- Reference without closing: `refactor(db): optimize query indexes (Refs #56)`
 
 ---
 
-## 进阶资源与参考
+## References & Examples
 
-- **[规范与标签定义](references/conventions.md)**：包含完整优先级矩阵（P0~P3）、类型标签以及 GitHub 自动关闭关键字。
-- **范例文件 (Examples)**：
-  - [Bug Issue 范例](examples/bug_issue_example.md)
-  - [需求 Issue 范例](examples/enhancement_issue_example.md)
-  - [RCA 结案评论范例](examples/rca_comment_example.md)
+- **[Conventions & Label Taxonomies](references/conventions.md)**: Full priority matrix (P0-P3), type labels, and GitHub auto-closing keywords.
+- **Example Files**:
+  - [Bug Issue Example](examples/bug_issue_example.md)
+  - [Feature Issue Example](examples/enhancement_issue_example.md)
+  - [RCA Comment Example](examples/rca_comment_example.md)
