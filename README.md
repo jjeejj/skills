@@ -1,35 +1,39 @@
+<div align="right">
+  <b>🇺🇸 English</b> | <a href="./README_zh.md">🇨🇳 简体中文</a>
+</div>
+
 # Personal AI Agent Skills Collection
 
-本仓库用于沉淀、管理与共享个人 AI Agent Skills，遵循标准 Agent Skills 规范，适配 Claude Code、Google Antigravity、Cursor 等 AI 编程助手与智能体环境。
+A curated collection of personal AI Agent Skills following the standard Agent Skills specification. Compatible with Claude Code, Google Antigravity, Cursor, and other agentic development environments.
 
 ---
 
-## 📁 目录结构规范
+## 📁 Repository Structure
 
-每个 Skill 独立为一个子目录，结构遵循标准 Skill 规范：
+Each skill is organized in its own self-contained directory:
 
 ```text
 skills/
-├── <skill-name>/               # 技能目录（命名采用小写短横线，如 my-skill）
-│   ├── SKILL.md                # 【必须】核心指令文档（包含 YAML frontmatter）
-│   ├── scripts/                # 【可选】辅助执行脚本或工具
-│   ├── references/             # 【可选】参考文档与技术规范
-│   └── examples/               # 【可选】使用范例
+├── <skill-name>/               # Skill directory (lowercase, hyphen-separated, e.g., my-skill)
+│   ├── SKILL.md                # [Required] Core instructions with YAML frontmatter
+│   ├── scripts/                # [Optional] Helper scripts and executable utilities
+│   ├── references/             # [Optional] Reference manuals and domain knowledge
+│   └── examples/               # [Optional] Usage examples and sample configurations
 └── ...
 ```
 
 ---
 
-## 🛠️ 创建与沉淀 Skill
+## 🛠️ Creating & Managing Skills
 
-推荐使用 [Anthropic skill-creator](https://www.skills.sh/anthropics/skills/skill-creator) 辅助生成与调优 Skill：
+We recommend using [Anthropic's skill-creator](https://www.skills.sh/anthropics/skills/skill-creator) to scaffold, iterate, and evaluate skills:
 
-1. **调用 skill-creator**：
-   - 描述你的技能目标、输入输出、触发条件与预期流程。
-   - `skill-creator` 会引导完成需求梳理，并自动生成结构规范的 `SKILL.md`（包含经过调优的 description 与 YAML frontmatter）。
-2. **存入仓库**：
-   - 将生成的技能目录保存至 `skills/<skill-name>/`。
-3. **提交与推送**：
+1. **Invoke `skill-creator`**:
+   - Describe your skill's goals, triggers, expected inputs/outputs, and step-by-step procedures.
+   - `skill-creator` will interactively guide the process and generate an optimized `SKILL.md` (with tested frontmatter and triggers).
+2. **Add to Repository**:
+   - Place the generated skill folder under `skills/<skill-name>/`.
+3. **Commit & Push**:
    ```bash
    git add .
    git commit -m "feat: add <skill-name>"
@@ -38,16 +42,16 @@ skills/
 
 ---
 
-## 📚 技能索引 (Skills Index)
+## 📚 Skills Index
 
-| 技能名称 | 说明 | 适用场景 |
+| Skill Name | Description | When to Use |
 | :--- | :--- | :--- |
-| *(待添加)* | - | - |
+| *(Pending)* | - | - |
 
-*(随着沉淀的技能增加，可在此表格中持续登记)*
+*(New skills will be documented here as they are added)*
 
 ---
 
-## 📄 开源协议
+## 📄 License
 
-本项目基于 [MIT 协议](LICENSE) 开源。
+This repository is licensed under the [MIT License](LICENSE).
