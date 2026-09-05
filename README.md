@@ -46,7 +46,7 @@ We recommend using [Anthropic's skill-creator](https://www.skills.sh/anthropics/
 
 | Skill Name | Description | When to Use |
 | :--- | :--- | :--- |
-| *(Pending)* | - | - |
+| [`github-issue-driven-dev`](skills/github-issue-driven-dev) | Standard GitHub Issue-driven development, tracking, and RCA workflow | Creating issues for features/bugs, progress & RCA comments, linking issues, closing issues, zero-pollution attachment uploads |
 
 *(New skills will be documented here as they are added)*
 
