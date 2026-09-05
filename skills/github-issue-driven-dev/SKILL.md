@@ -152,9 +152,9 @@ cat comment.md | <path-to>/gh-safe.sh issue-comment 42 -
 
 ---
 
-### 4. Zero-Pollution Asset Uploads (Without Git Commits)
+### 4. Mandatory Proactive Asset Uploads (Zero-Pollution Gatekeeper)
 
-When attaching local screenshots, videos, or logs:
+**Gatekeeper Rule**: Whenever the user provides or references a local image, screenshot, or screen recording (e.g., path in `.user_uploaded/`, `*.png`, `*.jpg`, `*.mov`, `*.mp4`), the agent **MUST PROACTIVELY EXECUTE THIS AS THE VERY FIRST ACTION** before writing code or editing files:
 
 ```bash
 URL=$(<path-to>/gh-safe.sh upload-asset "/path/to/screenshot.png")
@@ -162,10 +162,13 @@ echo "$URL"
 # Output example: https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0
 ```
 
-Embed directly in Markdown issue body or comment:
-```markdown
-![Screenshot description](https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0)
-```
+**Required User Confirmation**:
+Immediately inform the user in your response:
+> 已使用 scripts/gh-safe.sh upload-asset 将您的截图上传至 GitHub 官方附件池：`$URL`
+
+**Issue Archiving & Markdown Embedding**:
+- Embed the returned URL in the issue body or comment: `![Screenshot description]($URL)`
+- **Pre-commit Anti-Pollution Guard**: NEVER commit media files directly to git (`git add *.png`). If uncommitted media files exist, upload them via `gh-safe.sh upload-asset` and remove them from git staging.
 - **Supported Formats**: PNG, JPG, JPEG, GIF, WebP, SVG, MOV, MP4, WEBM, PDF.
 
 ---
