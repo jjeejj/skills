@@ -13,6 +13,16 @@ Standardizes requirements-driven development, progress audit trails, cross-linki
 
 ---
 
+## Installation
+
+Install directly into your AI agent environment via `skills`:
+
+```bash
+npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev
+```
+
+---
+
 ## Core Principles
 
 1. **One Issue Per Scope**: Every new feature, enhancement, or bug report must have a corresponding GitHub Issue filed first.

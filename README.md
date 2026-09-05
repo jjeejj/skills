@@ -44,9 +44,9 @@ We recommend using [Anthropic's skill-creator](https://www.skills.sh/anthropics/
 
 ## 📚 Skills Index
 
-| Skill Name | Description | When to Use |
-| :--- | :--- | :--- |
-| [`github-issue-driven-dev`](skills/github-issue-driven-dev) | Standard GitHub Issue-driven development, tracking, and RCA workflow | Creating issues for features/bugs, progress & RCA comments, linking issues, closing issues, zero-pollution attachment uploads |
+| Skill Name | Install Command | Description | When to Use |
+| :--- | :--- | :--- | :--- |
+| [`github-issue-driven-dev`](skills/github-issue-driven-dev) | `npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev` | Standard GitHub Issue-driven development, tracking, and RCA workflow | Creating issues for features/bugs, progress & RCA comments, linking issues, closing issues, zero-pollution attachment uploads |
 
 *(New skills will be documented here as they are added)*
 

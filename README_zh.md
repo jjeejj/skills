@@ -44,9 +44,9 @@ skills/
 
 ## 📚 技能索引 (Skills Index)
 
-| 技能名称 | 说明 | 适用场景 |
-| :--- | :--- | :--- |
-| [`github-issue-driven-dev`](skills/github-issue-driven-dev) | GitHub Issue 驱动开发、过程留底与 RCA 闭环规范 | 需求立项、缺陷报告、过程进展/RCA 评论、Issue 状态流转与关闭、免 Git 污染附件直传 |
+| 技能名称 | 安装命令 | 说明 | 适用场景 |
+| :--- | :--- | :--- | :--- |
+| [`github-issue-driven-dev`](skills/github-issue-driven-dev) | `npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev` | GitHub Issue 驱动开发、过程留底与 RCA 闭环规范 | 需求立项、缺陷报告、过程进展/RCA 评论、Issue 状态流转与关闭、免 Git 污染附件直传 |
 
 *(随着沉淀的技能增加，可在此表格中持续登记)*
 
