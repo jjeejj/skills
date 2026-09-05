@@ -29,11 +29,12 @@ npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev
 
 ## Core Principles
 
-1. **One Issue Per Scope**: Every new feature, enhancement, or bug report must have a corresponding GitHub Issue filed first.
-2. **Audit Trails & Progress Logging**: When encountering edge cases, discovering unexpected regressions, or completing a fix, append an update or Root Cause Analysis (RCA) comment to the issue.
-3. **Bidirectional Cross-Referencing**: When a new issue depends on or relates to an existing issue, explicitly reference `#<number>` and notify the origin issue.
-4. **Zero-Pollution Asset Uploads**: Screenshots, screen recordings, and logs must NEVER be committed to the Git repository. Always use `gh-safe.sh upload-asset` to upload directly to GitHub's official attachment storage (`user-attachments/assets`), and embed the returned URL as Markdown.
-5. **Idempotent Write Operations**: Never invoke bare `gh issue create` or `gh issue comment` without deduplication checks. Always use `gh-safe.sh` to prevent accidental duplicate tickets and repeated comments caused by agent retries or network replays.
+1. **User Visual Assets Zero Loss (🚨 Critical Protocol)**: Whenever a user uploads or references any screenshot, screen recording, or diagnostic log (e.g., `.user_uploaded/media_*.png`), the agent **MUST** upload it via `gh-safe.sh upload-asset "<filepath>"` **BEFORE** writing code, formulating implementation plans, or replying with technical findings, and embed it as Markdown in the associated GitHub Issue or comment.
+2. **One Issue Per Scope**: Every new feature, enhancement, or bug report must have a corresponding GitHub Issue filed first.
+3. **Audit Trails & Progress Logging**: When encountering edge cases, discovering unexpected regressions, or completing a fix, append an update or Root Cause Analysis (RCA) comment to the issue.
+4. **Bidirectional Cross-Referencing**: When a new issue depends on or relates to an existing issue, explicitly reference `#<number>` and notify the origin issue.
+5. **Zero-Pollution Asset Storage**: Media files must NEVER be committed to the Git repository. Always route through GitHub's official attachment storage (`user-attachments/assets`).
+6. **Idempotent Write Operations**: Never invoke bare `gh issue create` or `gh issue comment` without deduplication checks. Always use `gh-safe.sh` to prevent duplicate tickets and repeated comments caused by agent retries or network replays.
 
 ---
 
@@ -42,8 +43,13 @@ npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev
 The helper script `gh-safe.sh` is located inside the skill's `scripts/` directory. When executing commands, resolve the script path in this order:
 
 1. **Project-local script (Preferred if present)**: `./scripts/gh-safe.sh`
-2. **Skill-bundled script**: `<skill-directory>/scripts/gh-safe.sh`
-3. **Target Repository**:
+2. **Project agent skill directory**: `.agents/skills/github-issue-driven-dev/scripts/gh-safe.sh`
+3. **Skill-bundled script**: `<skill-directory>/scripts/gh-safe.sh`
+4. **Dynamic discovery fallback**:
+   ```bash
+   GH_SAFE=$(find . -name gh-safe.sh 2>/dev/null | head -n 1)
+   ```
+5. **Target Repository**:
    - Defaults automatically to the current Git repository via `gh repo view` or `git remote get-url origin`.
    - Explicit repository override: `REPO=owner/repo <script-path> <command> ...`
 
@@ -152,10 +158,10 @@ cat comment.md | <path-to>/gh-safe.sh issue-comment 42 -
 
 ---
 
-### 4. Mandatory Proactive Asset Uploads (Zero-Pollution Gatekeeper)
+### 4. 🚨 Critical Protocol: User Visual Assets Zero Loss (Mandatory Gatekeeper)
 
-**Gatekeeper Rule**: Whenever the user provides or references a local image, screenshot, or screen recording (e.g., path in `.user_uploaded/`, `*.png`, `*.jpg`, `*.mov`, `*.mp4`), the agent **MUST PROACTIVELY EXECUTE THIS AS THE VERY FIRST ACTION** before writing code or editing files:
-
+**Execution Rule**: Whenever the user uploads or references any screenshot, screen recording, or diagnostic log (e.g., path in `.user_uploaded/media_*.png`, `*.png`, `*.jpg`, `*.mov`, `*.mp4`):
+- **BEFORE** touching code, formulating implementation plans, or replying with technical findings, the agent **MUST FIRST** execute:
 ```bash
 URL=$(<path-to>/gh-safe.sh upload-asset "/path/to/screenshot.png")
 echo "$URL"
