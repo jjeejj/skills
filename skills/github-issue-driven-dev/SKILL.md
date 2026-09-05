@@ -42,14 +42,9 @@ npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev
 
 The helper script `gh-safe.sh` is located inside the skill's `scripts/` directory. When executing commands, resolve the script path in this order:
 
-1. **Project-local script (Preferred if present)**: `./scripts/gh-safe.sh`
-2. **Project agent skill directory**: `.agents/skills/github-issue-driven-dev/scripts/gh-safe.sh`
-3. **Skill-bundled script**: `<skill-directory>/scripts/gh-safe.sh`
-4. **Dynamic discovery fallback**:
-   ```bash
-   GH_SAFE=$(find . -name gh-safe.sh 2>/dev/null | head -n 1)
-   ```
-5. **Target Repository**:
+1. **Project-local script (Preferred if integrated)**: `./scripts/gh-safe.sh`
+2. **Skill-bundled script**: `<skill-directory>/scripts/gh-safe.sh`
+3. **Target Repository**:
    - Defaults automatically to the current Git repository via `gh repo view` or `git remote get-url origin`.
    - Explicit repository override: `REPO=owner/repo <script-path> <command> ...`
 
