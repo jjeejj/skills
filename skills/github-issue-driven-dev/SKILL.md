@@ -18,6 +18,10 @@ Standardizes requirements-driven development, progress audit trails, cross-linki
 Install directly into your AI agent environment via `skills`:
 
 ```bash
+# Shorthand (recommended)
+npx skills add jjeejj/skills --skill github-issue-driven-dev
+
+# Or using the full repository URL
 npx skills add https://github.com/jjeejj/skills --skill github-issue-driven-dev
 ```
 
