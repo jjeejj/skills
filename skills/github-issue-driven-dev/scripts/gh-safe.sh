@@ -199,10 +199,41 @@ case "$cmd" in
     echo "$URL"
     ;;
 
+  issue-edit)
+    REPO=$(get_repo)
+    RAW_ISSUE="${1:?Missing issue number}"
+    ISSUE=$(normalize_issue "$RAW_ISSUE")
+    BODY_ARG="${2:?Missing new body (file path, '-', or text string)}"
+    shift 2 || true
+
+    BODY_CONTENT=$(read_body_content "$BODY_ARG")
+    TMP_BODY=$(mktemp)
+    echo "$BODY_CONTENT" > "$TMP_BODY"
+    gh issue edit "$ISSUE" --repo "$REPO" --body-file "$TMP_BODY" "$@"
+    rm -f "$TMP_BODY"
+    echo "[gh-safe] Updated issue #${ISSUE}"
+    ;;
+
+  comment-edit)
+    REPO=$(get_repo)
+    COMMENT_ID="${1:?Missing comment ID}"
+    BODY_ARG="${2:?Missing new body (file path, '-', or text string)}"
+
+    BODY_CONTENT=$(read_body_content "$BODY_ARG")
+    TMP_BODY=$(mktemp)
+    echo "$BODY_CONTENT" > "$TMP_BODY"
+    jq -n --rawfile body "$TMP_BODY" '{body: $body}' \
+      | gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --input - >/dev/null
+    rm -f "$TMP_BODY"
+    echo "[gh-safe] Updated comment ${COMMENT_ID}"
+    ;;
+
   *)
     echo "Usage:" >&2
     echo "  $0 issue-create <title> [gh issue create flags...]" >&2
     echo "  $0 issue-comment <issue_number> <body_file | text | - (stdin)>" >&2
+    echo "  $0 issue-edit <issue_number> <body_file | text | - (stdin)> [gh issue edit flags...]" >&2
+    echo "  $0 comment-edit <comment_id> <body_file | text | - (stdin)>" >&2
     echo "  $0 issue-close <issue_number> [completed|not_planned] [closing_comment_text_or_file]" >&2
     echo "  $0 issue-view <issue_number> [gh issue view flags...]" >&2
     echo "  $0 upload-asset <file_path>" >&2
