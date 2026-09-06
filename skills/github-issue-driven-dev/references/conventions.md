@@ -67,15 +67,15 @@ When closing high-impact or complex bug issues, the closing or progress comment 
 ## 4. Proactive Asset Handling Protocol & Anti-Patterns
 
 ### 4.1 Mandatory Upload Flow
-1. **Detection**: Whenever a user provides or mentions an image, screenshot, or video path (e.g. `.user_uploaded/*`, `*.png`, `*.jpg`, `*.mov`, `*.mp4`), the agent **MUST** immediately run:
+1. **Detection & Upload**: Whenever a user provides or mentions an image, screenshot, or video path (e.g. `.user_uploaded/*`, `*.png`, `*.jpg`, `*.mov`, `*.mp4`), the agent **MUST** immediately run:
    ```bash
    scripts/gh-safe.sh upload-asset "<media_file_path>"
    ```
-2. **User Confirmation**: Confirm the upload in the chat response:
-   > 已使用 scripts/gh-safe.sh upload-asset 将您的截图上传至 GitHub 官方附件池：`https://github.com/user-attachments/assets/...`
-3. **Issue Attachment**: Embed the resulting URL into the corresponding GitHub Issue or comment.
+2. **Direct Embedding (No Confirmation Wait)**: Embed the resulting URL into the corresponding GitHub Issue or comment without pausing or waiting for user confirmation.
+3. **Progress Notification**: Inform the user that the asset has been uploaded and embedded, and proceed immediately with the task.
 
 ### 4.2 Anti-Patterns (Strictly Prohibited)
 - ❌ **Git Tree Contamination**: Never commit image or binary media assets into the Git repository (`git add *.png`).
 - ❌ **Local File References**: Never use local file paths (e.g., `file:///path/to/img.png` or `../assets/img.png`) in GitHub Issues, PRs, or comments.
 - ❌ **Passive / Forgotten Upload**: Never discuss or troubleshoot a user's screenshot without having proactively uploaded it to GitHub user-attachments first.
+- ❌ **Unauthorized Auto-Commits**: Never run `git commit` or `git push` automatically without explicit user instruction.

@@ -50,6 +50,14 @@ The helper script `gh-safe.sh` is located inside the skill's `scripts/` director
 
 ---
 
+## Language Consistency Rule (严禁中英文混杂)
+
+**Strict Uniformity Requirement**: The generated issue title, section headings, and content body MUST remain 100% linguistically consistent.
+- **Chinese context** (user uses Chinese or repo primarily in Chinese): Use **pure Chinese headings and content**. NEVER output English headings like `## Symptoms` followed by Chinese body text!
+- **English context** (user uses English or international repo): Use **pure English headings and content**.
+
+---
+
 ## Complete Workflow & Usage Guide
 
 ### 1. File Feature or Enhancement Issue (`enhancement`, `P0/P1/P2/P3`)
@@ -60,6 +68,33 @@ The helper script `gh-safe.sh` is located inside the skill's `scripts/` director
 ```
 
 **Markdown Body Template**:
+
+::: tabs
+@tab Chinese (中文项目/中文用户)
+```markdown
+## 背景
+[现状描述与痛点分析]
+
+## 需求
+- [需求点 1]
+- [需求点 2]
+
+## 关联 Issue（若有）
+- **前置依赖**：#3
+- **相关需求**：#9
+
+## 验收步骤
+1. [具体验证步骤 1]
+2. [具体验证步骤 2]
+
+## 验收标准
+- [最终达成的预期效果]
+
+## 优先级
+[P0 / P1 / P2 / P3]
+```
+
+@tab English (International / English)
 ```markdown
 ## Background
 [Context and problem statement]
@@ -82,6 +117,7 @@ The helper script `gh-safe.sh` is located inside the skill's `scripts/` director
 ## Priority
 [P0 / P1 / P2 / P3]
 ```
+:::
 
 ---
 
@@ -92,6 +128,34 @@ The helper script `gh-safe.sh` is located inside the skill's `scripts/` director
 ```
 
 **Markdown Body Template**:
+
+::: tabs
+@tab Chinese (中文项目/中文用户)
+```markdown
+## 现象
+[发生的问题与直观表现，包含环境：系统版本、架构、屏幕分辨率]
+
+## 复现步骤
+1. [步骤 1]
+2. [步骤 2]
+
+## 现场截图 / 录屏证据（若有）
+![现场证据](https://github.com/user-attachments/assets/xxxx)
+
+## 关联 Issue（若有）
+- **关联上游**：#10
+
+## 影响面
+[受影响的功能或受众]
+
+## 初步排查与可能方向
+- [代码定位或怀疑点]
+
+## 验收标准
+- [修复后的正确表现]
+```
+
+@tab English (International / English)
 ```markdown
 ## Symptoms
 [Observed error and visual behavior, including OS version, architecture, screen resolution]
@@ -115,6 +179,7 @@ The helper script `gh-safe.sh` is located inside the skill's `scripts/` director
 ## Acceptance Criteria
 - [Correct behavior after fix]
 ```
+:::
 
 ---
 
@@ -130,6 +195,31 @@ cat comment.md | <path-to>/gh-safe.sh issue-comment 42 -
 ```
 
 **RCA / Progress Comment Template**:
+
+::: tabs
+@tab Chinese (中文项目/中文用户)
+```markdown
+## 进展 / RCA 根因定位与修复（或 结案报告）
+
+### 现象与证据链
+[排查过程中发现的偏差、边界情况、报错日志或 Dump 数据]
+
+### 根因分析 (RCA)
+[代码逻辑原因或系统底层机制]
+
+### 应对方案调整 / 修复细节
+- **改动文件**：`path/to/file.ext`
+- **关联 Commit**：`commit_hash`
+
+### 验证情况
+- 自动化测试运行及结果
+- 手工端到端或诊断验证结论
+
+### 验收步骤
+1. [可供复查的具体步骤]
+```
+
+@tab English (International / English)
 ```markdown
 ## Progress / RCA: Root Cause & Resolution
 
@@ -150,6 +240,7 @@ cat comment.md | <path-to>/gh-safe.sh issue-comment 42 -
 ### Verification Steps
 1. [Steps for reviewers/users to verify]
 ```
+:::
 
 ---
 
@@ -163,13 +254,13 @@ echo "$URL"
 # Output example: https://github.com/user-attachments/assets/62a7a917-cbf9-4ab8-b85d-d21cafbe93b0
 ```
 
-**Required User Confirmation**:
-Immediately inform the user in your response:
-> 已使用 scripts/gh-safe.sh upload-asset 将您的截图上传至 GitHub 官方附件池：`$URL`
-
-**Issue Archiving & Markdown Embedding**:
-- Embed the returned URL in the issue body or comment: `![Screenshot description]($URL)`
-- **Pre-commit Anti-Pollution Guard**: NEVER commit media files directly to git (`git add *.png`). If uncommitted media files exist, upload them via `gh-safe.sh upload-asset` and remove them from git staging.
+**Direct Embedding & Autonomous Continuation (No Confirmation Prompt Needed)**:
+- Do NOT block or wait for user confirmation.
+- Immediately embed the returned URL into the relevant GitHub Issue body or comment:
+  `![Screenshot description]($URL)`
+- Inform the user in the response that the asset has been uploaded and embedded, and proceed with the technical work.
+- **Pre-commit Anti-Pollution Guard**: NEVER commit media files directly to git (`git add *.png`).
+- **No Automatic Commits**: NEVER run `git commit` or `git push` automatically without explicit user instruction.
 - **Supported Formats**: PNG, JPG, JPEG, GIF, WebP, SVG, MOV, MP4, WEBM, PDF.
 
 ---
