@@ -71,11 +71,13 @@ When closing high-impact or complex bug issues, the closing or progress comment 
    ```bash
    scripts/gh-safe.sh upload-asset "<media_file_path>"
    ```
-2. **Direct Embedding (No Confirmation Wait)**: Embed the resulting URL into the corresponding GitHub Issue or comment without pausing or waiting for user confirmation.
+2. **Direct Embedding (No Confirmation Wait)**: Embed the resulting URL into the corresponding GitHub Issue or comment using **Markdown image syntax** — `![What the image shows](https://github.com/user-attachments/assets/<uuid>)` — without pausing or waiting for user confirmation. Put each image on its own line, with a short bold caption line above it; do not nest it inside a bullet list.
 3. **Progress Notification**: Inform the user that the asset has been uploaded and embedded, and proceed immediately with the task.
+4. **Post-write Self-check**: After creating or editing the issue/comment, re-fetch its body and assert that the images are real Markdown images — the count of `^![` lines must equal the number of attached assets, and the count of bare `^[[:space:]]*https://github.com/user-attachments` lines must be `0`. Exact commands are in `SKILL.md` §4.
 
 ### 4.2 Anti-Patterns (Strictly Prohibited)
 - ❌ **Git Tree Contamination**: Never commit image or binary media assets into the Git repository (`git add *.png`).
 - ❌ **Local File References**: Never use local file paths (e.g., `file:///path/to/img.png` or `../assets/img.png`) in GitHub Issues, PRs, or comments.
+- ❌ **Bare Attachment URL**: Never paste a raw `https://github.com/user-attachments/assets/<uuid>` URL as plain text. `upload-asset` prints a **raw URL only**; pasted as text it renders as an inert link, never as an image. Always wrap it as `![description](url)` on its own line. Real incident: four screenshots silently failed to render across two comments because they were written as indented bare URLs.
 - ❌ **Passive / Forgotten Upload**: Never discuss or troubleshoot a user's screenshot without having proactively uploaded it to GitHub user-attachments first.
 - ❌ **Unauthorized Auto-Commits**: Never run `git commit` or `git push` automatically without explicit user instruction.

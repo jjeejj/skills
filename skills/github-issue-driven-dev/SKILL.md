@@ -1,9 +1,9 @@
 ---
 name: github-issue-driven-dev
 description: Standard GitHub Issue-driven development, tracking, and RCA workflow. Use whenever tracking requirements or bugs via GitHub Issues, creating or updating issues, filing bug reports, posting progress updates or root-cause analysis (RCA) comments, linking related issues, closing resolved issues, or uploading screenshots/videos to GitHub user-attachments without polluting the git repo. Triggers on phrases like 'file an issue', 'create bug report', 'post RCA', 'track on issue', 'upload screenshot to issue', 'close issue', or Chinese equivalents like '提issue', '创建issue', '记录到issue', 'RCA留底', '问题留痕', '上传截图到issue'.
-license: Apache-2.0
+license: MIT
 metadata:
-  version: v2
+  version: v3
   author: user
 ---
 
@@ -259,6 +259,20 @@ echo "$URL"
 - Immediately embed the returned URL into the relevant GitHub Issue body or comment:
   `![Screenshot description]($URL)`
 - Inform the user in the response that the asset has been uploaded and embedded, and proceed with the technical work.
+
+**🚨 Bare URL = Invisible Image (Anti-Pattern)**:
+- `upload-asset` prints a **raw URL only**. A raw `https://github.com/user-attachments/assets/...` pasted as plain text renders as dead text/link — **never** as an image. GitHub requires Markdown image syntax.
+- Wrong: `- Screenshot: https://github.com/user-attachments/assets/<uuid>`
+- Right: `![What the screenshot shows](https://github.com/user-attachments/assets/<uuid>)`
+- Put each image on its own line, with a bold caption line above it; do not nest it inside a list item.
+- **Post-write self-check (mandatory)**: after creating or editing the issue/comment, re-fetch it and assert the images are real Markdown images:
+```bash
+gh api repos/<owner>/<repo>/issues/comments/<comment_id> --jq .body \
+  | grep -cE '^!\['                        # must equal the number of attached images
+gh api repos/<owner>/<repo>/issues/comments/<comment_id> --jq .body \
+  | grep -cE '^[[:space:]]*https://github\.com/user-attachments'   # must be 0
+```
+- If a comment was already posted with bare URLs, fix it in place: rewrite the body file with `![...](...)` and run `gh-safe.sh comment-edit <comment_id> <file>`.
 - **Pre-commit Anti-Pollution Guard**: NEVER commit media files directly to git (`git add *.png`).
 - **No Automatic Commits**: NEVER run `git commit` or `git push` automatically without explicit user instruction.
 - **Supported Formats**: PNG, JPG, JPEG, GIF, WebP, SVG, MOV, MP4, WEBM, PDF.
